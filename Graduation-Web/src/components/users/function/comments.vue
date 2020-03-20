@@ -19,7 +19,7 @@
                         <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
                         <span>{{item.praise}}</span>
                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                        <a :href="'http://localhost:1337/books/' + item.bookid + '/mycomment'" @click="toBook">编辑</a>
+                        <a :href="'http://localhost:1337/books/' + item.bookid" @click="toBook">编辑</a>
                     </p>
                 </a-comment>
             </a-list-item>

@@ -98,6 +98,9 @@
                             break;
                         case 404:
                             alert("用户不存在！");
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");

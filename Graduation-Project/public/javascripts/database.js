@@ -143,7 +143,7 @@ pool.getConnection(function (err, connection) {
     });
     // 创建打榜信息相关处理的定时事件
     connection.query("CREATE EVENT IF NOT EXISTS eventone " +
-        "ON SCHEDULE EVERY 1 DAY STARTS DATE_ADD(CURDATE(), INTERVAL 3 HOUR) " +
+        "ON SCHEDULE EVERY 1 DAY STARTS '2020-02-25 03:00:00.001' " +
         "ON COMPLETION NOT PRESERVE ENABLE DO BEGIN " +
         "UPDATE comments c SET c.quality = false WHERE c.id IN (SELECT v.fcommentid FROM vs v WHERE v.endtime <= NOW() AND v.fscore < v.sscore); " +
         "UPDATE comments c SET c.quality = true WHERE c.id IN (SELECT v.scommentid FROM vs v WHERE v.endtime <= NOW() AND v.fscore < v.sscore); " +
@@ -273,8 +273,9 @@ db.getbook = function (id, userid, callback) {
             callback(err, null);
             return;
         }
-        connection.query("SELECT b.*, (SELECT s.status FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfstatus FROM books b WHERE b.id = ?",
-            [userid, id], function (err, rows) {
+        connection.query("SELECT b.*, (SELECT s.id FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfid, " +
+            "(SELECT s.status FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfstatus FROM books b WHERE b.id = ? ",
+            [userid, userid, id], function (err, rows) {
                 if (err) {
                     console.log(err);
                     connection.release();
@@ -742,7 +743,7 @@ db.updatecquality = function (id, status, callback) {
  * 
  * @param integer id 书评id
  * 
- * @return var
+ * @return integet 书评点赞数
  */
 db.getcpraise = function (id, callback) {
     pool.getConnection(function (err, connection) {

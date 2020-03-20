@@ -400,7 +400,7 @@ router.post('/:bookid/praise', function (req, res) {
                         return;
                     }
                     if (num < 100) {
-                        res.send(tools.returnsjson(200, "praisenum", num));
+                        res.send(tools.returnjson(200, null));
                         return;
                     }
                     db.getbqcomment(id, bookid, function (err, rows) {
@@ -416,7 +416,7 @@ router.post('/:bookid/praise', function (req, res) {
                                 }
                             });
                         }
-                        res.send(tools.returnsjson(200, "praisenum", num));
+                        res.send(tools.returnjson(200, null));
                     });
                 });
             });

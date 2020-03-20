@@ -121,6 +121,9 @@
                             alert("服务器拒绝了您的请求，请稍后再试！");
                             break;
                         case 404:
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
                             alert("用户不存在！");
                             break;
                         case 500:
