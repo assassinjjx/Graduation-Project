@@ -31,7 +31,6 @@ export default new Vuex.Store({
         },
         select(state, key) {
             state.selectedkey = key;
-            state.userfunction = '1';
         },
         selectfunc(state, key) {
             state.userfunction = key;

@@ -33,6 +33,7 @@
 
     export default {
         created() {
+            this.$store.commit('selectfunc', '2');
             this.getusercomments();
         },
         data() {
@@ -153,7 +154,7 @@
         z-index: -2;
         width: 100%;
         height: 100%;
-        padding: 84px 30px 10px 150px;
+        padding: 114px 30px 10px 150px;
         background-color: rgba(0, 0, 0, .25);
     }
     #list {

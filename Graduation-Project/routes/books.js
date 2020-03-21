@@ -534,7 +534,7 @@ router.post('/:bookid/vs', function (req, res) {
                 return;
             }
             if (judge) {
-                res.send(tools.returnjson(403, null));
+                res.send(tools.returnjson(404, null));
                 return;
             }
             db.updatevs(vsid, scorekeeper, function (err) {

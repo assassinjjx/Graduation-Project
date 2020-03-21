@@ -52,6 +52,7 @@
 
     export default {
         created() {
+            this.$store.commit('selectfunc', '3');
             this.form = this.$form.createForm(this);
             this.getuserinfo();
         },

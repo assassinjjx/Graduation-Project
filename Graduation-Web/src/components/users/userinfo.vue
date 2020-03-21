@@ -34,6 +34,7 @@
 <script>
     export default {
         created() {
+            this.$store.commit('select', '1');
             this.getuserinfo();
         },
         data() {

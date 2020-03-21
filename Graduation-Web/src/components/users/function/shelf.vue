@@ -108,6 +108,7 @@
 
     export default {
         created() {
+            this.$store.commit('selectfunc', '1');
             this.getusershelf("正在追读");
         },
         data() {

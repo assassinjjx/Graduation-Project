@@ -3,7 +3,7 @@
         <div id="info">
             <img :src="this.icon" id="cover" />
             <div id="wordinfo">
-                <h1>{{this.title}}</h1>
+                <h2>{{this.title}}</h2>
                 <p>
                     作者：{{this.author}}&nbsp;&nbsp;&nbsp;
                     字数：{{this.words}} &nbsp;&nbsp;&nbsp;
@@ -29,7 +29,7 @@
                 <a-tag>{{this.type}}</a-tag>
             </div>
             <div id="mark">
-                <h id="score">{{this.totalstar / this.totalpeople}}</h>
+                <h id="score">{{(this.totalstar / this.totalpeople).toFixed(1)}}</h>
                 <p>{{this.totalpeople / 1}}个评分</p>
             </div>
         </div>
@@ -74,14 +74,37 @@
                                         <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
                                         <span>{{item.praise}}</span>
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <span>挑战</span>
+                                        <a-button @click="vsclick(item)">挑战</a-button>
                                     </p>
                                 </a-comment>
                             </a-list-item>
                         </a-list>
                     </a-tab-pane>
                     <a-tab-pane tab="书评打榜" key="3">
-
+                        <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 2, xl: 4, xxl: 4 }"
+                                size="small"
+                                :dataSource="vsdata">
+                            <a-list-item slot="renderItem" slot-scope="item, index">
+                                <a-card>
+                                    <div id="vscard">
+                                        <a-row>
+                                            <a-col :span="12" class="name"><b>{{item.fname}}</b></a-col>
+                                            <a-col :span="12" class="name"><b>{{item.sname}}</b></a-col>
+                                        </a-row>
+                                        <a-row>
+                                            <a-col :span="8" class="name">{{item.fscore}}</a-col>
+                                            <a-col :span="8" class="name">vs</a-col>
+                                            <a-col :span="8" class="name">{{item.sscore}}</a-col>
+                                        </a-row>
+                                        <a-row>
+                                            <a-col :span="24">
+                                                <a-button type="primary" @click="showDrawer(item)">点击查看</a-button>
+                                            </a-col>
+                                        </a-row>
+                                    </div>
+                                </a-card>
+                            </a-list-item>
+                        </a-list>
                     </a-tab-pane>
                 </a-tabs>
             </div>
@@ -114,13 +137,36 @@
                 <h2 class="title">发表或修改评论</h2>
                 <a-rate class="title" :value="mycommentstar" size="small" @change="changestar" />
                 <a-form-item class="title">
-                    <a-textarea :rows="4" @change="handleChange" :value="mycommentcontent"></a-textarea>
-                    <a-button type="primary" @click="submit">
+                    <a-textarea :rows="6" @change="handleChange" :value="mycommentcontent"></a-textarea>
+                    <a-button id="sub" type="primary" @click="submit">
                         提交
                     </a-button>
                 </a-form-item>
             </div>
         </div>
+        <a-drawer width="640" placement="right" :closable="false" @close="onClose" :visible="visible">
+            <h1>擂主</h1>
+            <a-comment>
+                <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                          alt="Han Solo"
+                          slot="avatar" />
+                <p slot="author">{{this.fname}}</p>
+                <p slot="content">{{this.fcontent}}</p>
+                <a-button type="primary" @click="vote('fscore')">支持他</a-button>
+            </a-comment>
+            <p id="middle">
+                {{this.fscore}}&nbsp;&nbsp;&nbsp;VS&nbsp;&nbsp;&nbsp;{{this.sscore}}
+            </p>
+            <h1>挑战者</h1>
+            <a-comment>
+                <a-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                          alt="Han Solo"
+                          slot="avatar"/>
+                <p slot="author">{{this.sname}}</p>
+                <p slot="content">{{this.scontent}}</p>
+                <a-button type="primary" @click="vote('sscore')">支持他</a-button>
+            </a-comment>
+        </a-drawer>
     </a-layout>
 </template>
 
@@ -132,15 +178,27 @@
     const show = [];
     const commentdata = [];
     const mydata = [];
+    const vsdata = [];
 
     export default {
         created() {
+            this.$store.commit('select', '2');
             this.getbookinfo();
             this.getmycomment()
             this.getbookcomment('/comments');
         },
         data() {
             return {
+                visible: false,
+                selectkey: "1",
+                vsid: 0,
+                fname: "",
+                sname: "",
+                fcontent: "",
+                scontent: "",
+                fscore: 0,
+                sscore: 0,
+                votestatus: 0,
                 id: 0,
                 shelfid: 0,
                 icon: "",
@@ -159,10 +217,12 @@
                 mycommentid: 0,
                 mycommentstar: 0,
                 mycommentcontent: "",
+                mycommentquality: 0,
                 variance: 0,
                 show,
                 commentdata,
                 mydata,
+                vsdata,
                 moment,
                 pagination: {
                     pageSize: 2
@@ -180,14 +240,137 @@
             handleChange(e) {
                 this.mycommentcontent = e.target.value;
             },
+            onClose() {
+                this.visible = false;
+            },
+            showDrawer(item) {
+                this.vsid = item.id;
+                this.fname = item.fname;
+                this.sname = item.sname;
+                this.fcontent = item.fcontent;
+                this.scontent = item.scontent;
+                this.fscore = item.fscore;
+                this.sscore = item.sscore;
+                this.votestatus = item.votestatus;
+                this.visible = true;
+            },
             onChange(key) {
+                this.selectkey = key;
                 let commentstatus = "";
-                if (key == "1") {
-                    commentstatus = '/comments';
+                if (key == "3") {
+                    this.getbookvs();
                 } else {
-                    commentstatus = '/qcomments';
+                    commentstatus = key == "1" ? '/comments' : '/qcomments';
+                    this.getbookcomment(commentstatus);
                 }
-                this.getbookcomment(commentstatus);
+            },
+            vsclick(item) {
+                if (this.mycommentid == 0) {
+                    alert("发表书评后才能进行打榜，请先完成自己的书评！");
+                    return;
+                }
+                if (this.mycommentid == item.id) {
+                    alert("无法对自己的书评发起打榜！");
+                    return;
+                }
+                if (this.mycommentquality == 1) {
+                    alert("您的书评已经是精品书评，请继续保持！");
+                    return;
+                }
+                let _this = this;
+                const querydata = {
+                    'fcommentid': item.id,
+                    'scommentid': this.mycommentid,
+                };
+                this.axios({
+                    method: 'PUT',
+                    url: this.$store.state.host + this.$route.path + '/vs',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                        'Authorization': window.localStorage.getItem('token')
+                    },
+                    data: qs.stringify(querydata)
+                }).then(function (res) {
+                    let status = res.data.status;
+                    _this.vsdata.splice(0);
+                    if (status == 200) {
+                        alert("挑战开始，期待您有更好的表现！");
+                        return;
+                    }
+                    switch (status) {
+                        case 400:
+                            alert("参数请求错误！");
+                            break;
+                        case 401:
+                            alert("用户验证失败，请重新登录！");
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
+                            break;
+                        case 403:
+                            alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 500:
+                            alert("服务器连接错误，请稍后再试！");
+                            break;
+                        default:
+                            alert("发生错误！");
+                    }
+                }).catch(function (err) {
+                    alert(err);
+                });
+            },
+            vote(p) {
+                let _this = this;
+                const querydata = {
+                    'vsid': this.vsid,
+                    'scorekeeper': p
+                };
+                this.axios({
+                    method: 'POST',
+                    url: this.$store.state.host + this.$route.path + '/vs',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                        'Authorization': window.localStorage.getItem('token')
+                    },
+                    data: qs.stringify(querydata)
+                }).then(function (res) {
+                    let status = res.data.status;
+                    _this.vsdata.splice(0);
+                    switch (status) {
+                        case 200:
+                            if (p == "fscore") {
+                                _this.fscore += 1;
+                            } else {
+                                _this.sscore += 1;
+                            }
+                            _this.onChange(_this.selectkey);
+                            break;
+                        case 400:
+                            alert("参数请求错误！");
+                            break;
+                        case 401:
+                            alert("用户验证失败，请重新登录！");
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
+                            break;
+                        case 403:
+                            alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 404:
+                            alert("您已经投过票，请不要重复投票！");
+                            _this.onChange(_this.selectkey);
+                            break;
+                        case 500:
+                            alert("服务器连接错误，请稍后再试！");
+                            break;
+                        default:
+                            alert("发生错误！");
+                    }
+                }).catch(function (err) {
+                    alert(err);
+                });
             },
             submit() {
                 let _this = this;
@@ -210,6 +393,7 @@
                     if (status == 200) {
                         _this.variance = 0;
                         _this.getmycomment();
+                        _this.onChange(_this.selectkey);
                         return;
                     }
                     switch (status) {
@@ -257,6 +441,7 @@
                         _this.mycommentstar = 0;
                         _this.variance = 0;
                         _this.mycommentcontent = "";
+                        _this.onChange(_this.selectkey);
                         return;
                     }
                     switch (status) {
@@ -300,6 +485,8 @@
                 }).then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
+                        _this.onChange(_this.selectkey);
+                        _this.getmycomment();
                         return;
                     }
                     switch (status) {
@@ -432,6 +619,7 @@
                             break;
                         case 404:
                             alert("没有该书籍信息，请稍后再试！");
+                            _this.$store.commit('select', '2');
                             window.location.href = "/booklist";
                             break;
                         case 500:
@@ -497,6 +685,59 @@
                     alert(err);
                 });
             },
+            getbookvs() {
+                let _this = this;
+                this.axios({
+                    method: 'GET',
+                    url: this.$store.state.host + this.$route.path + '/vs',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                        'Authorization': window.localStorage.getItem('token')
+                    }
+                }).then(function (res) {
+                    let status = res.data.status;
+                    _this.vsdata.splice(0);
+                    if (status == 200) {
+                        for (let i = 0; i < res.data.data.length; i++) {
+                            let iteminfo = {
+                                id: res.data.data[i].id,
+                                fscore: res.data.data[i].fscore,
+                                sscore: res.data.data[i].sscore,
+                                fname: res.data.data[i].fname,
+                                sname: res.data.data[i].sname,
+                                fcontent: res.data.data[i].fcontent,
+                                scontent: res.data.data[i].scontent,
+                                votestatus: res.data.data[i].votestatus
+                            }
+                            _this.vsdata.push(iteminfo);
+                        }
+                        return;
+                    } else if (status == 404) {
+                        return;
+                    }
+                    switch (status) {
+                        case 400:
+                            alert("参数请求错误！");
+                            break;
+                        case 401:
+                            alert("用户验证失败，请重新登录！");
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
+                            break;
+                        case 403:
+                            alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 500:
+                            alert("服务器连接错误，请稍后再试！");
+                            break;
+                        default:
+                            alert("发生错误！");
+                    }
+                }).catch(function (err) {
+                    alert(err);
+                });
+            },
             getmycomment() {
                 let _this = this;
                 this.axios({
@@ -513,6 +754,7 @@
                         _this.mycommentid = res.data.data[0].id;
                         _this.mycommentstar = res.data.data[0].star;
                         _this.mycommentcontent = res.data.data[0].content;
+                        _this.mycommentquality = res.data.data[0].quality;
                         let iteminfo = {
                             id: res.data.data[0].id,
                             nickname: res.data.data[0].nickname,
@@ -563,13 +805,13 @@
     }
     #info {
         width: 100%;
-        height: 30%;
+        height: 25%;
         margin-top: 64px;
-        padding: 15px 80px 0 80px;
+        padding: 10px 80px 0 80px;
         background-color: rgba(255, 255, 255, 1);
     }
     #cover {
-        width: 150px;
+        width: 130px;
         float: left;
         margin-right: 30px;
     }
@@ -588,16 +830,25 @@
     }
     #commentblock {
         width: 840px;
-        height: 470px;
+        height: 510px;
         border-radius: 20px;
         margin: 10px 0 0 20px;
         padding: 5px 20px;
         float: left;
         background-color: rgba(255, 255, 255, 1);
     }
+    #vscard {
+        text-align: center;
+    }
+        #vscard .name {
+            height: 25px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
     #mycomment {
         width: 630px;
-        height: 470px;
+        height: 510px;
         border-radius: 20px;
         margin: 10px 20px 0 0;
         padding: 5px 20px;
@@ -606,5 +857,13 @@
     }
     #mycomment .title {
         margin: 5px 0 0 10px;
+    }
+    #sub  {
+        margin-top:  5px;
+        float: right;
+    }
+    #middle {
+        font-size: 100px;
+        margin: 50px 0 50px 100px;
     }
 </style>
