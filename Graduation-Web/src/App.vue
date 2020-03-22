@@ -1,23 +1,25 @@
 <template>
     <a-layout id="layout">
-        <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
-            <h class="logo">毕业设计</h>
-            <a-menu theme="dark"
-                    mode="horizontal"
-                    @click="onMenuClick"
-                    :selectedKeys="[this.$store.state.selectedkey]"
-                    :style="{ lineHeight: '64px' }">
-                <a-menu-item key="1" :disabled="this.$store.state.loginstatus"><router-link :to="'/users/'+this.$store.state.userid+'/shelf/'">个人中心</router-link></a-menu-item>
-                <a-menu-item key="2" :disabled="this.$store.state.loginstatus"><router-link to="/booklist">书库</router-link></a-menu-item>
-                <a-menu-item key="3" :disabled="this.$store.state.loginstatus"><router-link to="/comments">书评</router-link></a-menu-item>
-            </a-menu>
-            <div id="logout" align="right">
-                <a-button type="primary" :disabled="this.$store.state.loginstatus" @click="onExitClick">
-                    <a-icon type="logout" />
-                    <span>退出</span>
-                </a-button>
-            </div>
-        </a-layout-header>
+        <div id="hidden">
+            <a-layout-header :style="{ position: 'fixed', zIndex: 1, width: '100%' }">
+                <h class="logo">毕业设计</h>
+                <a-menu theme="dark"
+                        mode="horizontal"
+                        @click="onMenuClick"
+                        :selectedKeys="[this.$store.state.selectedkey]"
+                        :style="{ lineHeight: '64px' }">
+                    <a-menu-item key="1" :disabled="this.$store.state.loginstatus"><router-link :to="'/users/'+this.$store.state.userid+'/shelf/'">个人中心</router-link></a-menu-item>
+                    <a-menu-item key="2" :disabled="this.$store.state.loginstatus"><router-link to="/booklist">书库</router-link></a-menu-item>
+                    <a-menu-item key="3" :disabled="this.$store.state.loginstatus"><router-link to="/comments">书评</router-link></a-menu-item>
+                </a-menu>
+                <div id="logout" align="right">
+                    <a-button type="primary" :disabled="this.$store.state.loginstatus" @click="onExitClick">
+                        <a-icon type="logout" />
+                        <span>退出</span>
+                    </a-button>
+                </div>
+            </a-layout-header>
+        </div>
         <div id="window">
             <router-view/>
         </div>
@@ -48,6 +50,11 @@
     #layout {
         width: 100%;
         height: 100%;
+    }
+    #hidden {
+        z-index: 2;
+        width: 100%;
+        height: 64px;
     }
     #layout .logo {
         width: 110px;

@@ -8,6 +8,7 @@ import Shelf from './components/users/function/shelf.vue'
 import Comments from './components/users/function/comments.vue'
 import Update from './components/users/function/update.vue'
 import Bookinfo from './components/books/bookinfo.vue'
+import Booklist from './components/books/booklist.vue'
 
 Vue.use(Router)
 
@@ -56,6 +57,11 @@ export default new Router({
             path: '/books/:id',
             name: 'bookinfo',
             component: Bookinfo,
+        },
+        {
+            path: '/booklist',
+            name: 'booklist',
+            component: Booklist,
         }
     ]
 })

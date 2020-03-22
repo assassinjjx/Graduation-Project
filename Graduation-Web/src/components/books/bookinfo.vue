@@ -33,81 +33,12 @@
                 <p>{{this.totalpeople / 1}}个评分</p>
             </div>
         </div>
-        <div>
-            <div id="commentblock">
-                <a-tabs type="card" @change="onChange">
-                    <a-tab-pane tab="书评" key="1">
-                        <a-list itemLayout="vertical" size="small" :pagination="pagination" :dataSource="commentdata">
-                            <a-list-item slot="renderItem" slot-scope="item, index" key="index">
-                                <a-comment>
-                                    <p>
-                                        <b>{{item.nickname}}</b>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-rate v-model="item.star" size="small" disabled />
-                                    </p>
-                                    <p>{{item.content}}</p>
-                                    <p>
-                                        {{item.time}}
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
-                                        <span>{{item.praise}}</span>
-                                    </p>
-                                </a-comment>
-                            </a-list-item>
-                        </a-list>
-                    </a-tab-pane>
-                    <a-tab-pane tab="精品书评" key="2">
-                        <a-list itemLayout="vertical" size="small" :pagination="pagination" :dataSource="commentdata">
-                            <a-list-item slot="renderItem" slot-scope="item, index" key="index">
-                                <a-comment>
-                                    <p>
-                                        <b>{{item.nickname}}</b>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-rate v-model="item.star" size="small" disabled />
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-icon type="audit" :style="{fontSize: '30px'}" />
-                                    </p>
-                                    <p>{{item.content}}</p>
-                                    <p>
-                                        {{item.time}}
-                                        &nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
-                                        <span>{{item.praise}}</span>
-                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                        <a-button @click="vsclick(item)">挑战</a-button>
-                                    </p>
-                                </a-comment>
-                            </a-list-item>
-                        </a-list>
-                    </a-tab-pane>
-                    <a-tab-pane tab="书评打榜" key="3">
-                        <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 2, xl: 4, xxl: 4 }"
-                                size="small"
-                                :dataSource="vsdata">
-                            <a-list-item slot="renderItem" slot-scope="item, index">
-                                <a-card>
-                                    <div id="vscard">
-                                        <a-row>
-                                            <a-col :span="12" class="name"><b>{{item.fname}}</b></a-col>
-                                            <a-col :span="12" class="name"><b>{{item.sname}}</b></a-col>
-                                        </a-row>
-                                        <a-row>
-                                            <a-col :span="8" class="name">{{item.fscore}}</a-col>
-                                            <a-col :span="8" class="name">vs</a-col>
-                                            <a-col :span="8" class="name">{{item.sscore}}</a-col>
-                                        </a-row>
-                                        <a-row>
-                                            <a-col :span="24">
-                                                <a-button type="primary" @click="showDrawer(item)">点击查看</a-button>
-                                            </a-col>
-                                        </a-row>
-                                    </div>
-                                </a-card>
-                            </a-list-item>
-                        </a-list>
-                    </a-tab-pane>
-                </a-tabs>
-            </div>
+        <div id="totalcomment">
+            <a-collapse id="sum" accordion>
+                <a-collapse-panel header="书籍简介">
+                    <p>{{this.summarize}}</p>
+                </a-collapse-panel>
+            </a-collapse>
             <div id="mycomment">
                 <h2 class="title">管理我的评论</h2>
                 <a-list itemLayout="vertical" size="small" :dataSource="mydata">
@@ -137,12 +68,84 @@
                 <h2 class="title">发表或修改评论</h2>
                 <a-rate class="title" :value="mycommentstar" size="small" @change="changestar" />
                 <a-form-item class="title">
-                    <a-textarea :rows="6" @change="handleChange" :value="mycommentcontent"></a-textarea>
+                    <a-textarea :rows="4" @change="handleChange" :value="mycommentcontent"></a-textarea>
                     <a-button id="sub" type="primary" @click="submit">
                         提交
                     </a-button>
                 </a-form-item>
             </div>
+            <a-tabs id="commentblock" type="card" @change="onChange">
+                <a-tab-pane tab="书评" key="1">
+                    <a-list itemLayout="vertical" size="small" :pagination="pagination" :dataSource="commentdata">
+                        <a-list-item slot="renderItem" slot-scope="item, index" key="index">
+                            <a-comment>
+                                <p>
+                                    <b>{{item.nickname}}</b>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-rate v-model="item.star" size="small" disabled />
+                                </p>
+                                <p>{{item.content}}</p>
+                                <p>
+                                    {{item.time}}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
+                                    <span>{{item.praise}}</span>
+                                </p>
+                            </a-comment>
+                        </a-list-item>
+                    </a-list>
+                </a-tab-pane>
+                <a-tab-pane tab="精品书评" key="2">
+                    <a-list itemLayout="vertical" size="small" :pagination="pagination" :dataSource="commentdata">
+                        <a-list-item slot="renderItem" slot-scope="item, index" key="index">
+                            <a-comment>
+                                <p>
+                                    <b>{{item.nickname}}</b>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-rate v-model="item.star" size="small" disabled />
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-icon type="audit" :style="{fontSize: '30px'}" />
+                                </p>
+                                <p>{{item.content}}</p>
+                                <p>
+                                    {{item.time}}
+                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
+                                    <span>{{item.praise}}</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <a-button @click="vsclick(item)">挑战</a-button>
+                                </p>
+                            </a-comment>
+                        </a-list-item>
+                    </a-list>
+                </a-tab-pane>
+                <a-tab-pane tab="书评打榜" key="3">
+                    <a-list :grid="{ gutter: 16, xs: 1, sm: 2, md: 2, lg: 2, xl: 4, xxl: 4 }"
+                            size="small"
+                            :dataSource="vsdata">
+                        <a-list-item slot="renderItem" slot-scope="item, index">
+                            <a-card>
+                                <div id="vscard">
+                                    <a-row>
+                                        <a-col :span="12" class="name"><b>{{item.fname}}</b></a-col>
+                                        <a-col :span="12" class="name"><b>{{item.sname}}</b></a-col>
+                                    </a-row>
+                                    <a-row>
+                                        <a-col :span="8" class="name">{{item.fscore}}</a-col>
+                                        <a-col :span="8" class="name">vs</a-col>
+                                        <a-col :span="8" class="name">{{item.sscore}}</a-col>
+                                    </a-row>
+                                    <a-row>
+                                        <a-col :span="24">
+                                            <a-button type="primary" @click="showDrawer(item)">点击查看</a-button>
+                                        </a-col>
+                                    </a-row>
+                                </div>
+                            </a-card>
+                        </a-list-item>
+                    </a-list>
+                </a-tab-pane>
+            </a-tabs>
         </div>
         <a-drawer width="640" placement="right" :closable="false" @close="onClose" :visible="visible">
             <h1>擂主</h1>
@@ -225,8 +228,8 @@
                 vsdata,
                 moment,
                 pagination: {
-                    pageSize: 2
-                },
+                    pageSize: 10
+                }
             }
         },
         methods: {
@@ -293,11 +296,10 @@
                 }).then(function (res) {
                     let status = res.data.status;
                     _this.vsdata.splice(0);
-                    if (status == 200) {
-                        alert("挑战开始，期待您有更好的表现！");
-                        return;
-                    }
                     switch (status) {
+                        case 200:
+                            alert("挑战开始，期待您有更好的表现！");
+                            break;
                         case 400:
                             alert("参数请求错误！");
                             break;
@@ -801,14 +803,19 @@
     #layout {
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, .25);
+        background-color: rgba(255, 255, 255, 1);
     }
     #info {
         width: 100%;
         height: 25%;
-        margin-top: 64px;
-        padding: 10px 80px 0 80px;
+        margin: 64px 0 20px;
+        padding: 20px 80px 0 80px;
         background-color: rgba(255, 255, 255, 1);
+    }
+    #totalcomment {
+        width: 100%;
+        padding: 0 0 20px 0;
+        background-color: rgba(0, 0, 0, .25);
     }
     #cover {
         width: 130px;
@@ -830,7 +837,6 @@
     }
     #commentblock {
         width: 840px;
-        height: 510px;
         border-radius: 20px;
         margin: 10px 0 0 20px;
         padding: 5px 20px;
@@ -846,18 +852,25 @@
             text-overflow: ellipsis;
             white-space: nowrap;
         }
+    #sum {
+        width: 840px;
+        border-radius: 20px;
+        margin: 10px 0 0 20px;
+        float: left;
+        background-color: rgba(255, 255, 255, 1);
+    }
     #mycomment {
         width: 630px;
-        height: 510px;
+        height: 480px;
         border-radius: 20px;
         margin: 10px 20px 0 0;
         padding: 5px 20px;
         float: right;
         background-color: rgba(255, 255, 255, 1);
     }
-    #mycomment .title {
-        margin: 5px 0 0 10px;
-    }
+        #mycomment .title {
+            margin: 5px 0 0 10px;
+        }
     #sub  {
         margin-top:  5px;
         float: right;

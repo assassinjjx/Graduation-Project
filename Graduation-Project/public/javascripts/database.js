@@ -311,9 +311,10 @@ db.selectbook = function (userid, type, lwords, hwords, status, order, callback)
             callback(err, null);
             return;
         }
-        connection.query("SELECT b.*, (SELECT s.status FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfstatus FROM books b " +
-            "WHERE b.type = IFNULL(?, type) AND b.words >= IFNULL(?, words) AND b.words < IFNULL(?, words + 1) AND b.status = IFNULL(?, status) " +
-            "ORDER BY " + order + " DESC, id DESC", [userid, type, lwords, hwords, status], function (err, rows) {
+        connection.query("SELECT b.*, (SELECT s.id FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfid, " +
+            "(SELECT s.status FROM shelf s WHERE s.userid = ? AND s.bookid = b.id) AS shelfstatus FROM books b " +
+            "WHERE b.type = IFNULL(?, b.type) AND b.words >= IFNULL(?, b.words) AND b.words < IFNULL(?, b.words + 1) AND b.status = IFNULL(?, b.status) " +
+            "ORDER BY " + order + " DESC, id DESC", [userid, userid, type, lwords, hwords, status], function (err, rows) {
                 if (err) {
                     console.log(err); 
                     connection.release();

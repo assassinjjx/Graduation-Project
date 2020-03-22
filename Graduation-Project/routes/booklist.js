@@ -15,11 +15,11 @@ var db = require('../public/javascripts/database');
 // GET 获取书库书籍信息
 router.get('/', function (req, res) {
     let token = req.headers.authorization;
-    let type = req.query.type ? req.query.type : null;
-    let lwords = req.query.lwords ? req.query.lwords : null;
-    let hwords = req.query.hwords ? req.query.hwords : null;
-    let status = req.query.status ? req.query.status : null;
-    let order = req.query.order ? req.query.order : "totalstar";
+    let type = req.query.type !=  '0' ? req.query.type : null;
+    let lwords = req.query.lwords != '0' ? req.query.lwords : null;
+    let hwords = req.query.hwords != '0' ? req.query.hwords : null;
+    let status = req.query.status != '-1' ? req.query.status : null;
+    let order = req.query.order ? req.query.order  : "totalstar";
 
     // 检查传入参数是否存在或者是否为空
     if (!token) {
