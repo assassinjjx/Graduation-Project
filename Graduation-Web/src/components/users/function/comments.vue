@@ -18,8 +18,10 @@
                         &nbsp;&nbsp;&nbsp;&nbsp;
                         <a-icon type="like" :theme="item.praisestatus ? 'filled' : 'outlined'" @click="onClick(item)" />
                         <span>{{item.praise}}</span>
-                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                         <a :href="'http://localhost:1337/books/' + item.bookid" @click="toBook">编辑</a>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <a @click="deletecomment(item.id, item.bookid, item.star, index)">删除</a>
                     </p>
                 </a-comment>
             </a-list-item>
@@ -41,21 +43,23 @@
                 data,
                 moment,
                 pagination: {
-                    pageSize: 3
+                    pageSize: 10
                 },
             };
         },
         methods: {
-            onClick(item) {
-                item.praisestatus = !item.praisestatus;
-                item.praise += item.praisestatus ? 1 : -1;
+            toBook() {
+                this.$store.commit('select', '2');
+            },
+            deletecomment(id, bookid, star, index) {
                 let _this = this;
                 const querydata = {
-                    'commentid': item.id
+                    'commentid': id,
+                    'star': star
                 };
                 this.axios({
-                    method: item.praisestatus ? 'POST' : 'DELETE',
-                    url: this.$store.state.host + '/books/' + item.bookid + '/praise',
+                    method: 'DELETE',
+                    url: this.$store.state.host + '/books/' + bookid + '/mycomment',
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
                         'Authorization': window.localStorage.getItem('token')
@@ -63,10 +67,10 @@
                     data: qs.stringify(querydata)
                 }).then(function (res) {
                     let status = res.data.status;
-                    if (status == 200) {
-                        return;
-                    }
                     switch (status) {
+                        case 200:
+                            _this.data.splice(index, 1);
+                            break;
                         case 400:
                             alert("参数请求错误！");
                             break;
@@ -89,8 +93,47 @@
                     alert(err);
                 });
             },
-            toBook() {
-                this.$store.commit('select', '2');
+            onClick(item) {
+                item.praisestatus = !item.praisestatus;
+                item.praise += item.praisestatus ? 1 : -1;
+                let _this = this;
+                const querydata = {
+                    'commentid': item.id
+                };
+                this.axios({
+                    method: item.praisestatus ? 'POST' : 'DELETE',
+                    url: this.$store.state.host + '/books/' + item.bookid + '/praise',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
+                        'Authorization': window.localStorage.getItem('token')
+                    },
+                    data: qs.stringify(querydata)
+                }).then(function (res) {
+                    let status = res.data.status;
+                    switch (status) {
+                        case 200:
+                            break;
+                        case 400:
+                            alert("参数请求错误！");
+                            break;
+                        case 401:
+                            alert("用户验证失败，请重新登录！");
+                            window.localStorage.setItem('token', '');
+                            _this.$store.commit('deletelogin');
+                            window.location.href = "/login";
+                            break;
+                        case 403:
+                            alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 500:
+                            alert("服务器连接错误，请稍后再试！");
+                            break;
+                        default:
+                            alert("发生错误！");
+                    }
+                }).catch(function (err) {
+                    alert(err);
+                });
             },
             getusercomments() {
                 let _this = this;
@@ -120,8 +163,6 @@
                             _this.data.push(iteminfo);
                         }
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -135,6 +176,8 @@
                             break;
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 404:
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");
@@ -153,12 +196,13 @@
     #layout {
         z-index: -2;
         width: 100%;
-        height: 100%;
-        padding: 114px 30px 10px 150px;
+        min-height: 100%;
+        padding: 30px 100px 20px 400px;
         background-color: rgba(0, 0, 0, .25);
     }
     #list {
-        border-radius: 20px;
+        border-radius: 10px;
+        padding: 0 10px 10px 0;
         background-color: rgba(255, 255, 255, 1);
     }
 </style>

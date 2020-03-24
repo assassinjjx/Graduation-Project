@@ -74,7 +74,7 @@
                         <a-card>
                             <img alt="example"
                                  :src="item.icon"
-                                 height="270"
+                                 height="300"
                                  slot="cover" />
                             <p><a :href="'http://localhost:1337/books/'+item.bookid" @click="toBook"><b>{{item.title}}</b></a></p>
                             <p>作者：{{item.author}}</p>
@@ -115,7 +115,7 @@
             return {
                 data,
                 pagination: {
-                    pageSize: 5
+                    pageSize: 12
                 },
             };
         },
@@ -289,8 +289,8 @@
     #layout {
         z-index: -2;
         width: 100%;
-        height: 100%;
-        padding: 84px 30px 10px 150px;
+        min-height: 100%;
+        padding: 30px 30px 10px 350px;
         background-color: rgba(0, 0, 0, .25);
     }
 </style>

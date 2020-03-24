@@ -185,7 +185,7 @@
         z-index: -2;
         width: 100%;
         height: 100%;
-        padding: 144px 30px 10px 150px;
+        padding: 114px 30px 10px 350px;
         background-color: rgba(0, 0, 0, .25);
     }
     #card {

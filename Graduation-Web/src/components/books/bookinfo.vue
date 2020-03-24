@@ -3,7 +3,7 @@
         <div id="info">
             <img :src="this.icon" id="cover" />
             <div id="wordinfo">
-                <h2>{{this.title}}</h2>
+                <h1>{{this.title}}</h1>
                 <p>
                     作者：{{this.author}}&nbsp;&nbsp;&nbsp;
                     字数：{{this.words}} &nbsp;&nbsp;&nbsp;
@@ -338,9 +338,9 @@
                     data: qs.stringify(querydata)
                 }).then(function (res) {
                     let status = res.data.status;
-                    _this.vsdata.splice(0);
                     switch (status) {
                         case 200:
+                            _this.vsdata.splice(0);
                             if (p == "fscore") {
                                 _this.fscore += 1;
                             } else {
@@ -362,7 +362,6 @@
                             break;
                         case 404:
                             alert("您已经投过票，请不要重复投票！");
-                            _this.onChange(_this.selectkey);
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");
@@ -443,6 +442,7 @@
                         _this.mycommentstar = 0;
                         _this.variance = 0;
                         _this.mycommentcontent = "";
+                        _this.mycommentquality = 0;
                         _this.onChange(_this.selectkey);
                         return;
                     }
@@ -539,7 +539,7 @@
                     let status = res.data.status;
                     if (status == 200) {
                         _this.shelfstatus = _this.show[index] == "取消收藏" ? "加入书架" : _this.show[index];
-                        _this.show.length = 0;
+                        _this.show.splice(0);
                         for (let i = 0; i < 5; i++) {
                             _this.show.push(shelfstatuses[i]);
                             if (shelfstatuses[i] == _this.shelfstatus) {
@@ -807,9 +807,9 @@
     }
     #info {
         width: 100%;
-        height: 25%;
-        margin: 64px 0 20px;
-        padding: 20px 80px 0 80px;
+        height: 35%;
+        margin: 0 0 20px;
+        padding: 30px 80px 0 80px;
         background-color: rgba(255, 255, 255, 1);
     }
     #totalcomment {
@@ -818,7 +818,7 @@
         background-color: rgba(0, 0, 0, .25);
     }
     #cover {
-        width: 130px;
+        width: 150px;
         float: left;
         margin-right: 30px;
     }
@@ -838,7 +838,7 @@
     #commentblock {
         width: 840px;
         border-radius: 20px;
-        margin: 10px 0 0 20px;
+        margin: 15px 0 0 20px;
         padding: 5px 20px;
         float: left;
         background-color: rgba(255, 255, 255, 1);
@@ -855,15 +855,14 @@
     #sum {
         width: 840px;
         border-radius: 20px;
-        margin: 10px 0 0 20px;
+        margin: 20px 0 0 20px;
         float: left;
         background-color: rgba(255, 255, 255, 1);
     }
     #mycomment {
         width: 630px;
-        height: 480px;
         border-radius: 20px;
-        margin: 10px 20px 0 0;
+        margin: 20px 20px 0 0;
         padding: 5px 20px;
         float: right;
         background-color: rgba(255, 255, 255, 1);

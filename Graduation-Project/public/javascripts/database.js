@@ -40,7 +40,7 @@ pool.getConnection(function (err, connection) {
         "type VARCHAR(10) NOT NULL, " +
         "status BOOLEAN NOT NULL, " +
         "words INTEGER UNSIGNED NOT NULL, " +
-        "summarize VARCHAR(255) NOT NULL, " +
+        "summarize VARCHAR(1000) NOT NULL, " +
         "latest VARCHAR(30) NOT NULL, " +
         "totalstar DECIMAL(10,1) DEFAULT 0, " +
         "totalpeople DECIMAL(10,1) DEFAULT 0, " +
@@ -361,32 +361,6 @@ db.adduser = function (username, password, nickname, gender, old, callback) {
                 connection.release();
                 callback(null, rows.insertId);
             });
-    });
-}
-/**
- * 删除用户表用户信息
- * 
- * @param integer id 用户id
- * 
- * @return var
- */
-db.deleteuser = function (id, callback) {
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            console.log(err);
-            callback(err);
-            return;
-        }
-        connection.query("DELETE FROM users WHERE id = ?", [id], function (err) {
-            if (err) {
-                console.log(err);
-                connection.release();
-                callback(err);
-                return;
-            }
-            connection.release(); 
-            callback(null);
-        });
     });
 }
 /**

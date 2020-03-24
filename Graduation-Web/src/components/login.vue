@@ -59,6 +59,17 @@
 
     export default {
         beforeCreate() {
+            switch (this.$store.state.selectedkey) {
+                case "1":
+                    window.location.href = '/users/' + this.$store.state.userid + '/shelf';
+                    break;
+                case "2":
+                    window.location.href = '/booklist';
+                    break;
+                case "3":
+                    window.location.href = '/commentlist';
+                    break;
+            }
             this.form = this.$form.createForm(this);
         },
         data() {

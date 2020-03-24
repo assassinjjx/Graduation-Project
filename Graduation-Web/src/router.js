@@ -9,6 +9,7 @@ import Comments from './components/users/function/comments.vue'
 import Update from './components/users/function/update.vue'
 import Bookinfo from './components/books/bookinfo.vue'
 import Booklist from './components/books/booklist.vue'
+import Commentlist from './components/books/commentlist.vue'
 
 Vue.use(Router)
 
@@ -62,6 +63,11 @@ export default new Router({
             path: '/booklist',
             name: 'booklist',
             component: Booklist,
+        },
+        {
+            path: '/commentlist',
+            name: 'commentlist',
+            component: Commentlist,
         }
     ]
 })

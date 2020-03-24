@@ -10,7 +10,7 @@
                         :style="{ lineHeight: '64px' }">
                     <a-menu-item key="1" :disabled="this.$store.state.loginstatus"><router-link :to="'/users/'+this.$store.state.userid+'/shelf/'">个人中心</router-link></a-menu-item>
                     <a-menu-item key="2" :disabled="this.$store.state.loginstatus"><router-link to="/booklist">书库</router-link></a-menu-item>
-                    <a-menu-item key="3" :disabled="this.$store.state.loginstatus"><router-link to="/comments">书评</router-link></a-menu-item>
+                    <a-menu-item key="3" :disabled="this.$store.state.loginstatus"><router-link to="/commentlist">书评</router-link></a-menu-item>
                 </a-menu>
                 <div id="logout" align="right">
                     <a-button type="primary" :disabled="this.$store.state.loginstatus" @click="onExitClick">
@@ -70,7 +70,6 @@
     #window{
         width: 100%;
         height: 100%;
-        position: absolute;
     }
     
 </style>

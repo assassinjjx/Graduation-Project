@@ -98,41 +98,6 @@ router.post('/login', function (req, res) {
     });
 });
 
-// DELETE 用户注销
-router.delete('/:userid', function (req, res) {
-    let userid = req.params.userid;
-    let token = req.headers.authorization;
-
-    // 检查传入参数是否存在或者是否为空
-    if (!userid || !token) {
-        res.send(tools.returnjson(400, null));
-        return;
-    }
-
-    // 验证用户Token
-    account.verifytoken(token, function (err, id) {
-        if (err) {
-            if (id) {
-                res.send(tools.returnjson(401, null));
-                return;
-            }
-            res.send(tools.returnjson(500, null));
-            return;
-        }
-        if (!id || userid != id) {
-            res.send(tools.returnjson(403, null));
-            return;
-        }
-        db.deleteuser(id, function (err) {
-            if (err) {
-                res.send(tools.returnjson(500, null));
-                return;
-            }
-            res.send(tools.returnjson(200, null));
-        });
-    });
-});
-
 // POST 更改用户信息
 router.post('/:userid', function (req, res) {
     let userid = req.params.userid;
