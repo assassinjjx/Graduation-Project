@@ -50,6 +50,9 @@
     <Content Include="src\components\users\function\update.vue">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="src\http.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\router.js" />
     <Content Include="src\store\index.js">
       <SubType>Code</SubType>

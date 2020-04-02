@@ -30,7 +30,7 @@
 </template>
 <script>
     import moment from 'moment';
-    import qs from 'qs';
+    import { httprequest } from '../../../http';
     const data = [];
 
     export default {
@@ -53,19 +53,12 @@
             },
             deletecomment(id, bookid, star, index) {
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'commentid': id,
                     'star': star
                 };
-                this.axios({
-                    method: 'DELETE',
-                    url: this.$store.state.host + '/books/' + bookid + '/mycomment',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest('DELETE', this.$store.state.host + '/books/' + bookid + '/mycomment', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     switch (status) {
                         case 200:
@@ -97,18 +90,11 @@
                 item.praisestatus = !item.praisestatus;
                 item.praise += item.praisestatus ? 1 : -1;
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'commentid': item.id
                 };
-                this.axios({
-                    method: item.praisestatus ? 'POST' : 'DELETE',
-                    url: this.$store.state.host + '/books/' + item.bookid + '/praise',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(item.praisestatus ? 'POST' : 'DELETE', this.$store.state.host + '/books/' + item.bookid + '/praise', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     switch (status) {
                         case 200:
@@ -137,14 +123,8 @@
             },
             getusercomments() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/comments',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + '/users/' + this.$store.state.userid + '/comments')
+                .then(function (res) {
                     let status = res.data.status;
                     _this.data.splice(0);
                     if (status == 200) {

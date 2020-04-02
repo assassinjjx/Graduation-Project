@@ -48,7 +48,7 @@
 </template>
 
 <script>
-    import qs from 'qs';
+    import { httprequest } from '../../../http';
 
     export default {
         created() {
@@ -69,14 +69,8 @@
             },
             getuserinfo() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + '/users/' + this.$store.state.userid)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.nickname = res.data.data[0].nickname;
@@ -124,20 +118,13 @@
                     const nickname = values['nickname'];
                     const old = values['old'];
                     if (nickname && old) {
-                        const updatedata = {
+                        const resdata = {
                             'nickname': nickname,
                             'gender': this.gender,
                             'old': old
                         };
-                        this.axios({
-                            method: 'POST',
-                            url: this.$store.state.host + '/users/' + this.$store.state.userid,
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                                'Authorization': window.localStorage.getItem('token')
-                            },
-                            data: qs.stringify(updatedata)
-                        }).then(function (res) {
+                        httprequest('POST', this.$store.state.host + '/users/' + this.$store.state.userid, resdata)
+                        .then(function (res) {
                             let status = res.data.status;
                             if (status == 200) {
                                 _this.$notification.open({

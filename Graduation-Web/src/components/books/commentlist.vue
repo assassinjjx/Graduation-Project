@@ -30,7 +30,7 @@
 
 <script>
     import moment from 'moment';
-    import qs from 'qs';
+    import { httprequest } from '../../http';
 
     const data = [];
 
@@ -55,18 +55,11 @@
                 item.praisestatus = !item.praisestatus;
                 item.praise += item.praisestatus ? 1 : -1;
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'commentid': item.id
                 };
-                this.axios({
-                    method: item.praisestatus ? 'POST' : 'DELETE',
-                    url: this.$store.state.host + '/books/' + item.bookid + '/praise',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(item.praisestatus ? 'POST' : 'DELETE', this.$store.state.host + '/books/' + item.bookid + '/praise', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     switch (status) {
                         case 200:
@@ -95,14 +88,8 @@
             },
             getcomments() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/comments',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + '/comments')
+                .then(function (res) {
                     let status = res.data.status;
                     _this.data.splice(0);
                     if (status == 200) {
@@ -122,8 +109,6 @@
                             _this.data.push(iteminfo);
                         }
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -137,6 +122,8 @@
                             break;
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 404:
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");

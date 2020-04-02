@@ -103,7 +103,7 @@
 </template>
 
 <script>
-    import qs from 'qs';
+    import { httprequest } from '../../../http';
     const data = [];
 
     export default {
@@ -140,19 +140,12 @@
             },
             updateShelf(id, index, s) {
                 let _this = this;
-                const postdata = {
+                const resdata = {
                     'shelfid': id,
                     'status': s
                 };
-                this.axios({
-                    method: 'POST',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(postdata)
-                }).then(function (res) {
+                httprequest('POST', this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.data.splice(index, 1);
@@ -183,18 +176,11 @@
             },
             deleteShelf(id, index) {
                 let _this = this;
-                const deletedata = {
+                const resdata = {
                     'shelfid': id,
                 };
-                this.axios({
-                    method: 'DELETE',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(deletedata)
-                }).then(function (res) {
+                httprequest('DELETE', this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.data.splice(index, 1);
@@ -225,17 +211,11 @@
             },
             getusershelf(s) {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    params: {
-                        'status': s
-                    }
-                }).then(function (res) {
+                const resdata = {
+                    'status': s
+                };
+                httprequest('GET', this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     _this.data.splice(0);
                     if (status == 200) {
@@ -255,8 +235,6 @@
                             _this.data.push(iteminfo);
                         }
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -270,6 +248,8 @@
                             break;
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 404:
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");

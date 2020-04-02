@@ -22,6 +22,8 @@
 </template>
 
 <script>
+    import { httprequest } from '../../http';
+
     export default {
         created() {
             this.$store.commit('select', '1');
@@ -40,14 +42,8 @@
             },
             getuserinfo() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + '/users/' + this.$store.state.userid)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.nickname = res.data.data[0].nickname;

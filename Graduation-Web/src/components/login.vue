@@ -55,7 +55,7 @@
 </template>
 
 <script>
-    import qs from 'qs';
+    import { httprequest } from '../http';
 
     export default {
         beforeCreate() {
@@ -97,16 +97,12 @@
                         } else {
                             window.localStorage.setItem('storename', '');
                         }
-                        const data = {
+                        const resdata = {
                             'username': username,
                             'password': password
                         };
-                        this.axios({
-                            method: 'POST',
-                            url: this.$store.state.host + '/users/login',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
-                            data: qs.stringify(data)
-                        }).then(function (res) {
+                        httprequest('POST', this.$store.state.host + '/users/login', resdata)
+                        .then(function (res) {
                             let status = res.data.status;
                             if (status == 200) {
                                 let token = res.data.data.token;

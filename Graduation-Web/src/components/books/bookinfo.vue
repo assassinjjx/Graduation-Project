@@ -175,7 +175,7 @@
 
 <script>
     import moment from 'moment';
-    import qs from 'qs';
+    import { httprequest } from '../../http';
 
     const shelfstatuses = ["正在追读", "养肥待看", "已经看过", "不看屏蔽", "取消收藏"];
     const show = [];
@@ -281,19 +281,12 @@
                     return;
                 }
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'fcommentid': item.id,
                     'scommentid': this.mycommentid,
                 };
-                this.axios({
-                    method: 'PUT',
-                    url: this.$store.state.host + this.$route.path + '/vs',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest('PUT', this.$store.state.host + this.$route.path + '/vs', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     _this.vsdata.splice(0);
                     switch (status) {
@@ -324,19 +317,12 @@
             },
             vote(p) {
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'vsid': this.vsid,
                     'scorekeeper': p
                 };
-                this.axios({
-                    method: 'POST',
-                    url: this.$store.state.host + this.$route.path + '/vs',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest('POST', this.$store.state.host + this.$route.path + '/vs', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     switch (status) {
                         case 200:
@@ -375,29 +361,21 @@
             },
             submit() {
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'star': this.mycommentstar,
                     'content': this.mycommentcontent,
                     'variance': this.variance,
                     'commentid': this.mycommentid
                 };
-                this.axios({
-                    method: this.mycommentid ? 'POST' : 'PUT',
-                    url: this.$store.state.host + this.$route.path + '/mycomment',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(this.mycommentid ? 'POST' : 'PUT', this.$store.state.host + this.$route.path + '/mycomment', resdata)
+                .then(function (res) {
                     let status = res.data.status;
-                    if (status == 200) {
-                        _this.variance = 0;
-                        _this.getmycomment();
-                        _this.onChange(_this.selectkey);
-                        return;
-                    }
                     switch (status) {
+                        case 200:
+                            _this.variance = 0;
+                            _this.getmycomment();
+                            _this.onChange(_this.selectkey);
+                            break;
                         case 400:
                             alert("参数请求错误！");
                             break;
@@ -422,31 +400,23 @@
             },
             deletecomment(id, star) {
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'commentid': id,
                     'star': star
                 };
-                this.axios({
-                    method: 'DELETE',
-                    url: this.$store.state.host + this.$route.path + '/mycomment',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest('DELETE', this.$store.state.host + this.$route.path + '/mycomment', resdata)
+                .then(function (res) {
                     let status = res.data.status;
-                    if (status == 200) {
-                        _this.mydata.splice(0);
-                        _this.mycommentid = 0;
-                        _this.mycommentstar = 0;
-                        _this.variance = 0;
-                        _this.mycommentcontent = "";
-                        _this.mycommentquality = 0;
-                        _this.onChange(_this.selectkey);
-                        return;
-                    }
                     switch (status) {
+                        case 200:
+                            _this.mydata.splice(0);
+                            _this.mycommentid = 0;
+                            _this.mycommentstar = 0;
+                            _this.variance = 0;
+                            _this.mycommentcontent = "";
+                            _this.mycommentquality = 0;
+                            _this.onChange(_this.selectkey);
+                            break;
                         case 400:
                             alert("参数请求错误！");
                             break;
@@ -473,25 +443,17 @@
                 item.praisestatus = !item.praisestatus;
                 item.praise += item.praisestatus ? 1 : -1;
                 let _this = this;
-                const querydata = {
+                const resdata = {
                     'commentid': item.id
                 };
-                this.axios({
-                    method: item.praisestatus ? 'POST' : 'DELETE',
-                    url: this.$store.state.host + this.$route.path + '/praise',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(item.praisestatus ? 'POST' : 'DELETE', this.$store.state.host + this.$route.path + '/praise', resdata)
+                .then(function (res) {
                     let status = res.data.status;
-                    if (status == 200) {
-                        _this.onChange(_this.selectkey);
-                        _this.getmycomment();
-                        return;
-                    }
                     switch (status) {
+                        case 200:
+                            _this.onChange(_this.selectkey);
+                            _this.getmycomment();
+                            break;
                         case 400:
                             alert("参数请求错误！");
                             break;
@@ -521,21 +483,14 @@
                 } else if (show[index] == "取消收藏") {
                     func = 'DELETE';
                 }
-                const querydata = {
+                let _this = this;
+                const resdata = {
                     'bookid': this.id,
                     'status': show[index],
                     'shelfid': this.shelfid,
                 };
-                let _this = this;
-                this.axios({
-                    method: func,
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(func, this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.shelfstatus = _this.show[index] == "取消收藏" ? "加入书架" : _this.show[index];
@@ -573,14 +528,8 @@
             },
             getbookinfo() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + this.$route.path,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + this.$route.path)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         _this.id = res.data.data[0].id;
@@ -636,14 +585,8 @@
             },
             getbookcomment(bc) {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + this.$route.path + bc,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + this.$route.path + bc)
+                .then(function (res) {
                     let status = res.data.status;
                     _this.commentdata.splice(0);
                     if (status == 200) {
@@ -661,8 +604,6 @@
                             _this.commentdata.push(iteminfo);
                         }
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -677,6 +618,8 @@
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
                             break;
+                        case 404:
+                            break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");
                             break;
@@ -689,14 +632,8 @@
             },
             getbookvs() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + this.$route.path + '/vs',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + this.$route.path + '/vs')
+                .then(function (res) {
                     let status = res.data.status;
                     _this.vsdata.splice(0);
                     if (status == 200) {
@@ -714,8 +651,6 @@
                             _this.vsdata.push(iteminfo);
                         }
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -730,6 +665,8 @@
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
                             break;
+                        case 404:
+                            break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");
                             break;
@@ -742,14 +679,8 @@
             },
             getmycomment() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + this.$route.path + '/mycomment',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    }
-                }).then(function (res) {
+                httprequest('GET', this.$store.state.host + this.$route.path + '/mycomment')
+                .then(function (res) {
                     let status = res.data.status;
                     _this.mydata.splice(0);
                     if (status == 200) {
@@ -769,8 +700,6 @@
                         }
                         _this.mydata.push(iteminfo);
                         return;
-                    } else if (status == 404) {
-                        return;
                     }
                     switch (status) {
                         case 400:
@@ -784,6 +713,8 @@
                             break;
                         case 403:
                             alert("服务器拒绝了您的请求，请稍后再试！");
+                            break;
+                        case 404:
                             break;
                         case 500:
                             alert("服务器连接错误，请稍后再试！");

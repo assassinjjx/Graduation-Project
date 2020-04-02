@@ -91,7 +91,7 @@
 </template>
 
 <script>
-    import qs from 'qs';
+    import { httprequest } from '../http';
 
     export default {
         beforeCreate() {
@@ -124,19 +124,15 @@
                             alert("两次密码输入不一致！");
                             return;
                         }
-                        const data = {
+                        const resdata = {
                             'username': username,
                             'password': password,
                             'nickname': nickname,
                             'gender': Number(this.state),
                             'old': old
                         };
-                        this.axios({
-                            method: 'POST',
-                            url: this.$store.state.host + '/users/register',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' },
-                            data: qs.stringify(data)
-                        }).then(function (res) {
+                        httprequest('POST', this.$store.state.host + '/users/register', resdata)
+                        .then(function (res) {
                             let status = res.data.status;
                             if (status == 200) {
                                 let token = res.data.data.token;

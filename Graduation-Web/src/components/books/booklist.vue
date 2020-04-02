@@ -187,7 +187,7 @@
 </template>
 
 <script>
-    import qs from 'qs';
+    import { httprequest } from '../../http';
 
     const shelfstatuses = ["正在追读", "养肥待看", "已经看过", "不看屏蔽", "取消收藏"];
     const booklist = [];
@@ -242,7 +242,7 @@
                     const titlelink = values['titlelink'];
                     const latestlink = values['latestlink'];
                     if (title || author || type || words || summarize || latest || icon || titlelink || latestlink) {
-                        const querydata = {
+                        const resdata = {
                             'title': title,
                             'author': author,
                             'type': type,
@@ -254,15 +254,8 @@
                             'titlelink': titlelink,
                             'latestlink': latestlink
                         }
-                        this.axios({
-                            method: 'POST',
-                            url: _this.$store.state.host + '/books',
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                                'Authorization': window.localStorage.getItem('token')
-                            },
-                            data: qs.stringify(querydata)
-                        }).then(function (res) {
+                        httprequest('POST', _this.$store.state.host + '/books', resdata)
+                        .then(function (res) {
                             let status = res.data.status;
                             switch (status) {
                                 case 200:
@@ -353,21 +346,14 @@
                 } else if (item.show[index] == "取消收藏") {
                     func = 'DELETE';
                 }
-                const querydata = {
+                const resdata = {
                     'bookid': item.id,
                     'status': item.show[index],
                     'shelfid': item.shelfid,
                 };
                 let _this = this;
-                this.axios({
-                    method: func,
-                    url: this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    data: qs.stringify(querydata)
-                }).then(function (res) {
+                httprequest(func, this.$store.state.host + '/users/' + this.$store.state.userid + '/shelf', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     if (status == 200) {
                         item.shelfstatus = item.show[index] == "取消收藏" ? "加入书架" : item.show[index];
@@ -405,21 +391,15 @@
             },
             getbooklist() {
                 let _this = this;
-                this.axios({
-                    method: 'GET',
-                    url: this.$store.state.host + '/booklist',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8',
-                        'Authorization': window.localStorage.getItem('token')
-                    },
-                    params: {
-                        'type': this.type,
-                        'lwords': this.lwords,
-                        'hwords': this.hwords,
-                        'status': this.status,
-                        'order': this.order
-                    }
-                }).then(function (res) {
+                const resdata = {
+                    'type': this.type,
+                    'lwords': this.lwords,
+                    'hwords': this.hwords,
+                    'status': this.status,
+                    'order': this.order
+                };
+                httprequest('GET', this.$store.state.host + '/booklist', resdata)
+                .then(function (res) {
                     let status = res.data.status;
                     _this.booklist.splice(0);
                     switch (status) {
